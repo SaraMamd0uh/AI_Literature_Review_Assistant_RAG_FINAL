@@ -8,10 +8,28 @@ hybrid retriever (06_retrieve_context.py) + Gemini (07_prompting.py).
 """
 
 import os
-import importlib
-from pathlib import Path
-
 import streamlit as st
+import pandas as pd
+import chromadb
+from chromadb.utils import embedding_functions
+
+DATA_PATH = "data/chunks.parquet"
+CHROMA_PATH = "chroma_db"
+
+@st.cache_resource
+def load_db():
+    if not os.path.exists(DATA_PATH):
+        st.error(f"ملف {DATA_PATH} مش موجود. اتأكدي انك رفعتيه على GitHub.")
+        st.stop()
+    
+    df = pd.read_parquet(DATA_PATH)
+    
+    # لو chroma_db مش موجود، ابنِه من جديد
+    client = chromadb.PersistentClient(path=CHROMA_PATH)
+    # ... باقي كود الـ embedding بتاعك
+    return client, df
+
+client, df = load_db()
 
 # Numbered filenames aren't valid Python identifiers, so we import them by
 # string name via importlib instead of a normal `import 06_retrieve_context`.
