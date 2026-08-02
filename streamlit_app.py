@@ -1,7 +1,7 @@
 """
-WESAL v3 - ULTRA PREMIUM PROFESSIONAL DESIGN
-تصميم عالمي احترافي يجذب الشركات
-Inspired by: Perplexity AI + Linear + Notion + Vercel
+WESAL v4 - LANDING PAGE STYLE
+تصميم مستوحى من Book.com & Soundtrack
+Light Theme · Warm Colors · Big Hero · Modern
 """
 import os, re
 from pathlib import Path
@@ -15,620 +15,589 @@ CHUNKS_PATH = Path("data/chunks.parquet")
 MODEL = "meta-llama/llama-3.3-70b-instruct:free"
 
 st.set_page_config(
-    page_title="وصال — مساعد الأبحاث الأكاديمية الذكي",
-    page_icon="🔮",
+    page_title="وصال — أثر الرقمنة على التفاعلات الاجتماعية",
+    page_icon="📚",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ===== ULTRA PREMIUM CSS =====
+# ===== LANDING PAGE CSS =====
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
 
 :root {
-    --bg-primary: #09090B;
-    --bg-secondary: #18181B;
-    --bg-tertiary: #27272A;
-    --bg-card: rgba(255,255,255,0.03);
-    --bg-card-hover: rgba(255,255,255,0.06);
-    --bg-glass: rgba(9,9,11,0.8);
-    --border: rgba(255,255,255,0.06);
-    --border-hover: rgba(255,255,255,0.12);
-    --border-active: rgba(139,92,246,0.3);
-    --text-primary: #FAFAFA;
-    --text-secondary: #A1A1AA;
-    --text-tertiary: #71717A;
-    --accent: #8B5CF6;
-    --accent-soft: rgba(139,92,246,0.1);
-    --accent-glow: rgba(139,92,246,0.15);
-    --gradient-1: linear-gradient(135deg, #8B5CF6, #06B6D4);
-    --gradient-2: linear-gradient(135deg, #8B5CF6, #EC4899);
-    --gradient-3: linear-gradient(135deg, #06B6D4, #8B5CF6, #EC4899);
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
-    --shadow-glow: 0 0 40px rgba(139,92,246,0.15);
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
+    --bg: #F8F5F0;
+    --bg-card: #FFFFFF;
+    --bg-soft: #FAF7F2;
+    --bg-accent: #F0EBE3;
+    --primary: #1A1A2E;
+    --primary-soft: #2D2D44;
+    --accent: #7BA98F;
+    --accent-dark: #5C8A70;
+    --accent-warm: #E8C4A0;
+    --accent-purple: #A594C7;
+    --accent-orange: #F4A574;
+    --text: #1A1A2E;
+    --text-muted: #6B6B7D;
+    --text-light: #9B9BA8;
+    --border: #E8E3DB;
+    --shadow-sm: 0 2px 8px rgba(26,26,46,0.04);
+    --shadow-md: 0 8px 24px rgba(26,26,46,0.08);
+    --shadow-lg: 0 20px 60px rgba(26,26,46,0.12);
+    --radius: 16px;
+    --radius-lg: 28px;
 }
 
-/* Reset & Base */
+/* Reset */
 html, body, [class*="css"] {
-    font-family: 'Tajawal', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    background: var(--bg-primary) !important;
-    color: var(--text-primary) !important;
+    font-family: 'Tajawal', 'Inter', sans-serif !important;
+    background: var(--bg) !important;
+    color: var(--text) !important;
 }
-.stApp {
-    background: var(--bg-primary) !important;
-}
+.stApp { background: var(--bg) !important; }
 
-/* Hide Streamlit defaults */
 #MainMenu, footer, header,
 div[data-testid="stToolbar"],
-div[data-testid="stDecoration"],
-div[data-testid="stStatusWidget"] {
+div[data-testid="stDecoration"] {
     visibility: hidden !important;
     display: none !important;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
-
-/* ========== TOP NAVIGATION ========== */
-.top-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background: var(--bg-glass);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
+.block-container {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    max-width: 100% !important;
 }
-.nav-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
+
+/* ========== MAIN CARD (like Book.com white card) ========== */
+.main-card {
+    max-width: 1240px;
+    margin: 24px auto;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Decorative circles */
+.deco-circle-1 {
+    position: fixed;
+    top: 50px;
+    left: -60px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,196,160,0.3), transparent);
+    z-index: 0;
+    pointer-events: none;
+}
+.deco-circle-2 {
+    position: fixed;
+    bottom: 100px;
+    right: -80px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(165,148,199,0.25), transparent);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ========== NAVIGATION ========== */
+.top-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 24px 48px;
+    border-bottom: 1px solid var(--border);
 }
 .nav-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
-    text-decoration: none;
+    gap: 10px;
 }
-.nav-logo {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: var(--gradient-1);
+.nav-logo-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    object-fit: contain;
+}
+.nav-logo-fallback {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--primary);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-size: 16px;
-    color: white;
-    box-shadow: var(--shadow-glow);
-    position: relative;
-    overflow: hidden;
+    font-weight: 900;
+    font-size: 20px;
+    font-family: 'Playfair Display', serif;
 }
-.nav-logo::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
-    border-radius: inherit;
-}
-.nav-logo img {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    object-fit: contain;
-}
-.nav-title {
-    font-weight: 700;
-    font-size: 1.15rem;
-    color: var(--text-primary);
+.brand-text {
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: var(--primary);
     letter-spacing: -0.02em;
 }
-.nav-subtitle {
-    font-size: 0.72rem;
-    color: var(--text-tertiary);
-    font-weight: 400;
-    margin-top: -2px;
+.brand-text .dot { color: var(--accent); }
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+    align-items: center;
 }
+.nav-link {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+}
+.nav-link:hover { color: var(--primary); }
+.nav-link.active { color: var(--primary); font-weight: 600; }
+
 .nav-right {
     display: flex;
-    align-items: center;
     gap: 12px;
-}
-.nav-badge {
-    display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.72rem;
-    color: var(--text-tertiary);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    padding: 5px 12px;
+}
+.btn-login {
+    color: var(--primary);
+    font-weight: 600;
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.92rem;
+}
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    padding: 12px 26px;
     border-radius: 100px;
-    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
 }
-.nav-badge .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #22C55E;
-    animation: pulse-dot 2s ease-in-out infinite;
+.btn-primary:hover {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(26,26,46,0.2);
 }
-@keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-.nav-status {
-    font-size: 0.72rem;
-    color: var(--accent);
-    background: var(--accent-soft);
-    border: 1px solid var(--border-active);
-    padding: 5px 12px;
-    border-radius: 100px;
-    font-weight: 500;
-}
-
-/* Spacer for fixed nav */
-.nav-spacer { height: 70px; }
 
 /* ========== HERO SECTION ========== */
-.hero-section {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 4rem 1rem 2rem 1rem;
-    text-align: center;
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 60px 48px 40px 48px;
+    align-items: center;
     position: relative;
 }
 
-/* Ambient glow behind hero */
-.hero-glow {
+.hero-left {
+    position: relative;
+    z-index: 2;
+}
+.hero-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    direction: rtl;
+    text-align: right;
+}
+.hero-title .highlight {
+    color: var(--accent-dark);
+    position: relative;
+    display: inline-block;
+}
+.hero-title .highlight::after {
+    content: '';
     position: absolute;
-    top: -80px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 400px;
-    background: radial-gradient(ellipse, rgba(139,92,246,0.08) 0%, rgba(6,182,212,0.04) 40%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+    bottom: 4px;
+    left: 0;
+    right: 0;
+    height: 12px;
+    background: var(--accent-warm);
+    opacity: 0.4;
+    z-index: -1;
+    border-radius: 4px;
 }
 
-.hero-logo-wrap {
+.hero-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 480px;
+    margin-bottom: 32px;
+    direction: rtl;
+    text-align: right;
+    font-weight: 400;
+}
+
+/* Search Bar (like Book.com) */
+.search-bar {
+    background: white;
+    border-radius: 100px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-md);
+    max-width: 480px;
+    border: 1px solid var(--border);
+}
+.search-input-wrap {
+    flex: 1;
+    padding: 0 20px;
+}
+
+/* ========== HERO RIGHT (Image + Floating Icons) ========== */
+.hero-right {
     position: relative;
-    z-index: 1;
-    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 480px;
 }
-.hero-logo-outer {
-    width: 88px;
-    height: 88px;
-    margin: 0 auto;
-    border-radius: 22px;
-    background: var(--gradient-1);
-    padding: 2px;
-    box-shadow: var(--shadow-glow), 0 0 80px rgba(139,92,246,0.1);
-    animation: float 6s ease-in-out infinite;
-}
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-.hero-logo-inner {
+
+.hero-image-wrap {
+    position: relative;
     width: 100%;
-    height: 100%;
-    border-radius: 20px;
-    background: var(--bg-primary);
+    height: 480px;
+    background: linear-gradient(135deg, #F4E8D8 0%, #E8D4B8 100%);
+    border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
 }
-.hero-logo-inner img {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    filter: brightness(1.1);
+.hero-image-inner {
+    font-size: 12rem;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
+    animation: float-hero 6s ease-in-out infinite;
 }
-.hero-logo-fallback {
-    font-size: 2.2rem;
-    font-weight: 900;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+@keyframes float-hero {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
 }
 
-.hero-title {
-    position: relative;
-    z-index: 1;
-    font-size: 3.2rem;
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
-    margin-bottom: 0.3rem;
-    background: linear-gradient(180deg, #FAFAFA 0%, #A1A1AA 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-.hero-tagline {
-    position: relative;
-    z-index: 1;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--accent);
-    margin-bottom: 1rem;
-    letter-spacing: 0.05em;
-}
-.hero-desc {
-    position: relative;
-    z-index: 1;
-    font-size: 1.05rem;
-    color: var(--text-secondary);
-    line-height: 1.8;
-    max-width: 520px;
-    margin: 0 auto 2.5rem auto;
-}
-
-/* Stats row */
-.stats-row {
+/* Floating badges */
+.float-badge {
+    position: absolute;
+    background: white;
+    padding: 14px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 2rem;
-    margin-bottom: 3rem;
-    position: relative;
-    z-index: 1;
+    font-size: 1.5rem;
+    animation: float-badge 4s ease-in-out infinite;
 }
-.stat-item {
-    text-align: center;
+.float-badge-1 {
+    top: 40px;
+    left: 20px;
+    background: #E8F4EC;
+    animation-delay: 0s;
 }
-.stat-num {
-    font-size: 1.6rem;
-    font-weight: 800;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-family: 'JetBrains Mono', monospace;
+.float-badge-2 {
+    top: 100px;
+    right: 20px;
+    background: #EDE8F5;
+    animation-delay: 1s;
 }
-.stat-label {
+.float-badge-3 {
+    bottom: 80px;
+    left: 40px;
+    background: #FDF0E4;
+    animation-delay: 2s;
+}
+.float-badge-4 {
+    bottom: 40px;
+    right: 60px;
+    background: #E8F0FB;
+    animation-delay: 1.5s;
+}
+@keyframes float-badge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ========== BOTTOM CARDS (like Book.com bottom row) ========== */
+.bottom-section {
+    padding: 40px 48px 48px 48px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+    direction: rtl;
+}
+.bottom-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.bottom-card:hover { transform: translateY(-4px); }
+
+.card-tag {
     font-size: 0.75rem;
-    color: var(--text-tertiary);
+    color: var(--accent-dark);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+}
+.card-tag.muted {
+    color: var(--text-light);
+}
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+}
+
+/* ========== CHAT INTERFACE (after starting) ========== */
+.chat-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 48px;
+}
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+.chat-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    font-weight: 900;
+    font-family: 'Playfair Display', serif;
+}
+.chat-header-text {
+    flex: 1;
+}
+.chat-header-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+.chat-header-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
     margin-top: 2px;
 }
 
-/* ========== EXAMPLE CARDS ========== */
-.examples-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    max-width: 560px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-}
-.example-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 16px 20px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-align: right;
-    direction: rtl;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    overflow: hidden;
-}
-.example-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gradient-1);
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-.example-card:hover {
-    border-color: var(--border-active);
-    background: var(--bg-card-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-.example-card:hover::before {
-    opacity: 0.03;
-}
-.example-icon {
-    font-size: 1.3rem;
-    flex-shrink: 0;
-}
-.example-text {
-    font-size: 0.92rem;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    position: relative;
-    z-index: 1;
-}
-
-/* ========== CHAT AREA ========== */
-.chat-container {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 1rem 0;
-}
-
-/* User message */
-.user-msg {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1.5rem;
-}
 .user-bubble {
-    background: var(--accent-soft);
-    border: 1px solid var(--border-active);
-    border-radius: 18px 18px 4px 18px;
-    padding: 14px 20px;
-    max-width: 80%;
-    line-height: 1.8;
+    background: var(--primary);
+    color: white;
+    border-radius: 20px 20px 6px 20px;
+    padding: 16px 22px;
+    max-width: 75%;
+    margin-left: auto;
+    line-height: 1.7;
     font-size: 0.96rem;
-    color: var(--text-primary);
-    position: relative;
+    box-shadow: var(--shadow-sm);
 }
 .user-bubble.rtl {
     direction: rtl;
     text-align: right;
-    border-radius: 18px 18px 18px 4px;
-}
-
-/* Assistant message */
-.assistant-msg {
-    margin-bottom: 2rem;
-}
-.assistant-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-.assistant-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: var(--gradient-1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-    color: white;
-    flex-shrink: 0;
-}
-.assistant-name {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-}
-.assistant-content {
-    line-height: 2;
-    font-size: 1rem;
-    color: var(--text-primary);
-    padding-right: 38px;
-}
-.assistant-content.rtl {
-    direction: rtl;
-    text-align: right;
-    padding-right: 0;
-    padding-left: 38px;
-}
-.assistant-content.ltr {
-    direction: ltr;
-    text-align: left;
-}
-
-/* Sources panel */
-.sources-panel {
-    margin-top: 1.2rem;
-    margin-right: 38px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-}
-.sources-panel.rtl {
-    margin-right: 0;
-    margin-left: 38px;
-}
-.sources-header {
-    padding: 10px 16px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-.source-row {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 0.82rem;
-    transition: background 0.15s;
-}
-.source-row:last-child { border-bottom: none; }
-.source-row:hover { background: var(--bg-card-hover); }
-.source-num {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-size: 0.68rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-family: 'JetBrains Mono', monospace;
-}
-.source-info {
-    flex: 1;
-}
-.source-title {
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.5;
-    margin-bottom: 2px;
-}
-.source-meta {
-    color: var(--text-tertiary);
-    font-size: 0.75rem;
-}
-
-/* ========== INPUT AREA ========== */
-.stChatInput {
-    max-width: 760px;
-    margin: 0 auto;
-}
-.stChatInput > div {
-    border-radius: 20px !important;
-    border: 1px solid var(--border) !important;
-    background: var(--bg-secondary) !important;
-    box-shadow: var(--shadow-md), 0 0 40px rgba(139,92,246,0.05) !important;
-    transition: all 0.2s !important;
-}
-.stChatInput > div:focus-within {
-    border-color: var(--border-active) !important;
-    box-shadow: var(--shadow-lg), var(--shadow-glow) !important;
-}
-.stChatInput textarea {
-    color: var(--text-primary) !important;
-    font-family: 'Tajawal', sans-serif !important;
-    font-size: 0.95rem !important;
-}
-.stChatInput textarea::placeholder {
-    color: var(--text-tertiary) !important;
-}
-
-/* Chat message overrides */
-.stChatMessage {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    max-width: 760px;
-    margin-left: auto;
+    border-radius: 20px 20px 20px 6px;
+    margin-left: 0;
     margin-right: auto;
 }
 
-/* Loading animation */
-.loading-dots {
+.assistant-wrap {
     display: flex;
-    gap: 4px;
-    padding: 8px 0;
+    gap: 14px;
+    max-width: 90%;
+    margin-bottom: 8px;
 }
-.loading-dots span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: bounce 1.4s ease-in-out infinite;
+.assistant-wrap.rtl {
+    direction: rtl;
 }
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-    40% { transform: scale(1); opacity: 1; }
+.assistant-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Playfair Display', serif;
+    flex-shrink: 0;
+}
+.assistant-body {
+    flex: 1;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 18px 22px;
+    line-height: 1.9;
+    font-size: 0.98rem;
+    color: var(--text);
+}
+.assistant-body.rtl {
+    direction: rtl;
+    text-align: right;
 }
 
-/* ========== FOOTER ========== */
-.footer {
-    max-width: 760px;
-    margin: 4rem auto 1rem auto;
-    text-align: center;
-    padding: 1.5rem 0;
-    border-top: 1px solid var(--border);
+/* Sources */
+.sources-block {
+    margin-top: 14px;
+    padding: 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
 }
-.footer-text {
+.sources-title {
     font-size: 0.72rem;
-    color: var(--text-tertiary);
-    line-height: 1.8;
-}
-.footer-brand {
+    color: var(--text-light);
     font-weight: 700;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+}
+.source-line {
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.86rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+.source-line:first-of-type { border-top: none; padding-top: 0; }
+.source-num-badge {
+    width: 22px;
+    height: 22px;
+    background: var(--accent);
+    color: white;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+}
+.source-content {
+    flex: 1;
+}
+.source-name {
+    color: var(--primary);
+    font-weight: 600;
+    line-height: 1.5;
+}
+.source-authors {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-top: 2px;
 }
 
-/* Streamlit button overrides */
-.stButton > button {
-    background: var(--bg-card) !important;
+/* ========== STREAMLIT OVERRIDES ========== */
+
+/* Chat input */
+.stChatInput {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 48px;
+}
+.stChatInput > div {
+    border-radius: 100px !important;
     border: 1px solid var(--border) !important;
-    color: var(--text-secondary) !important;
-    border-radius: var(--radius-md) !important;
-    padding: 14px 20px !important;
+    background: white !important;
+    box-shadow: var(--shadow-md) !important;
+    padding: 6px !important;
+}
+.stChatInput > div:focus-within {
+    border-color: var(--accent) !important;
+    box-shadow: 0 8px 24px rgba(123,169,143,0.2) !important;
+}
+.stChatInput textarea {
+    color: var(--text) !important;
+    font-family: 'Tajawal', sans-serif !important;
+    font-size: 0.96rem !important;
+    background: transparent !important;
+}
+.stChatInput textarea::placeholder {
+    color: var(--text-light) !important;
+}
+
+/* Buttons */
+.stButton > button {
+    background: white !important;
+    border: 1px solid var(--border) !important;
+    color: var(--primary) !important;
+    border-radius: 14px !important;
+    padding: 16px 22px !important;
     text-align: right !important;
     direction: rtl !important;
     font-family: 'Tajawal', sans-serif !important;
     font-size: 0.92rem !important;
     line-height: 1.7 !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
     width: 100% !important;
+    box-shadow: var(--shadow-sm) !important;
 }
 .stButton > button:hover {
-    background: var(--bg-card-hover) !important;
-    border-color: var(--border-active) !important;
-    color: var(--text-primary) !important;
+    background: var(--bg-soft) !important;
+    border-color: var(--accent) !important;
+    color: var(--primary) !important;
     transform: translateY(-2px) !important;
-    box-shadow: var(--shadow-glow) !important;
+    box-shadow: var(--shadow-md) !important;
 }
 
-/* Expander */
-.streamlit-expanderHeader {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: var(--radius-md) !important;
-    color: var(--text-secondary) !important;
-    font-size: 0.85rem !important;
+.stChatMessage {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 8px 0 !important;
 }
-.streamlit-expanderContent {
-    background: var(--bg-secondary) !important;
-    border: 1px solid var(--border) !important;
-    border-top: none !important;
+
+/* Hide chat message avatars (we make custom) */
+.stChatMessage [data-testid="chatAvatarIcon-assistant"],
+.stChatMessage [data-testid="chatAvatarIcon-user"] {
+    display: none !important;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .hero-title { font-size: 2.2rem; }
-    .stats-row { gap: 1.2rem; }
-    .stat-num { font-size: 1.2rem; }
-    .top-nav { padding: 0 1rem; }
-    .nav-subtitle { display: none; }
+@media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding: 40px 24px; }
+    .hero-title { font-size: 2.5rem; }
+    .bottom-section { grid-template-columns: 1fr; padding: 32px 24px; gap: 20px; }
+    .top-nav { padding: 20px 24px; flex-wrap: wrap; gap: 12px; }
+    .nav-links { display: none; }
+    .hero-image-wrap { height: 320px; }
+    .hero-image-inner { font-size: 8rem; }
+    .chat-wrapper { padding: 24px; }
+    .stChatInput { padding: 0 24px; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -664,241 +633,229 @@ def build_pkg(q, df, bm25):
     sc = bm25.get_scores(tok(q))
     rank = np.argsort(sc)[::-1][:10]
     cands = df.iloc[rank].copy()
-    cands["score"]=sc[rank]
-    top=cands["score"].max() if len(cands) else 0
-    cands=cands[cands["score"]>=top*0.25].head(4)
-    lines=[]; rows=[]; used=0
-    for _,r in cands.iterrows():
-        if used+len(r["chunk_text"].split())>620: continue
+    cands["score"] = sc[rank]
+    top = cands["score"].max() if len(cands) else 0
+    cands = cands[cands["score"] >= top*0.25].head(4)
+    lines, rows, used = [], [], 0
+    for _, r in cands.iterrows():
+        if used + len(r["chunk_text"].split()) > 620: continue
         lines.append(f"[{r['title']} — {r['authors']} ({r['publication_year']})]\n{r['chunk_text']}")
-        rows.append(r); used+=len(r["chunk_text"].split())
-    return {"ctx":"\n\n".join(lines), "df":pd.DataFrame(rows)}
+        rows.append(r); used += len(r["chunk_text"].split())
+    return {"ctx": "\n\n".join(lines), "df": pd.DataFrame(rows)}
 
 def get_key():
     if "OPENROUTER_API_KEY" in st.secrets: return st.secrets["OPENROUTER_API_KEY"]
     if "API" in st.secrets: return st.secrets["API"]
     return os.environ.get("OPENROUTER_API_KEY")
 
-# ===== TOP NAVIGATION =====
+# Decorative circles
+st.markdown('<div class="deco-circle-1"></div><div class="deco-circle-2"></div>', unsafe_allow_html=True)
+
+# ===== MAIN CARD START =====
 logo_url = "https://raw.githubusercontent.com/SaraMamd0uh/AI_Literature_Review_Assistant_RAG_FINAL/main/logo.png"
+
 st.markdown(f"""
-<div class="top-nav">
-  <div class="nav-inner">
+<div class="main-card">
+  <div class="top-nav">
     <div class="nav-brand">
-      <div class="nav-logo">
-        <img src="{logo_url}" onerror="this.style.display='none'; this.parentElement.innerHTML='و';">
-      </div>
-      <div>
-        <div class="nav-title">وصال</div>
-        <div class="nav-subtitle">WESAL Research Assistant</div>
-      </div>
+      <img src="{logo_url}" class="nav-logo-img" onerror="this.outerHTML='<div class=\\'nav-logo-fallback\\'>و</div>';">
+      <div class="brand-text">وصال<span class="dot">.</span></div>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link active">الرئيسية</a>
+      <a class="nav-link">المصادر</a>
+      <a class="nav-link">حول المشروع</a>
+      <a class="nav-link">تواصل</a>
     </div>
     <div class="nav-right">
-      <div class="nav-badge">
-        <span class="dot"></span>
-        <span>Llama 3.3 · 70B</span>
-      </div>
-      <div class="nav-status">⚡ RAG Active</div>
+      <button class="btn-login">تسجيل الدخول</button>
+      <button class="btn-primary">ابدأ الآن</button>
     </div>
   </div>
-</div>
-<div class="nav-spacer"></div>
 """, unsafe_allow_html=True)
 
 # ===== LOAD DATA =====
 (index_data, err) = get_index()
 if err:
-    st.error("⚠️ data/chunks.parquet not found")
-    st.stop()
+    st.error("⚠️ data/chunks.parquet not found"); st.stop()
 df, bm25 = index_data
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "started" not in st.session_state:
+    st.session_state.started = False
 
-# ===== HERO (only when empty) =====
-if len(st.session_state.messages) == 0:
-    st.markdown(f"""
-    <div class="hero-section">
-      <div class="hero-glow"></div>
-      <div class="hero-logo-wrap">
-        <div class="hero-logo-outer">
-          <div class="hero-logo-inner">
-            <img src="{logo_url}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=hero-logo-fallback>و</div>';">
-          </div>
+# ===== HERO SECTION (Landing) =====
+if not st.session_state.started and len(st.session_state.messages) == 0:
+    st.markdown("""
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-title">
+          اكتشف أثر <span class="highlight">الرقمنة</span><br>
+          على تفاعلاتنا<br>
+          الاجتماعية
+        </div>
+        <div class="hero-subtitle">
+          مساعد بحثي أكاديمي ذكي يجيبك من 12 مصدر علمي محكّم
+          عن التحولات الاجتماعية في العصر الرقمي
         </div>
       </div>
-      <div class="hero-title">وصال</div>
-      <div class="hero-tagline">WESAL · Academic Research Intelligence</div>
-      <div class="hero-desc">
-        مساعد بحثي ذكي مدعوم بالذكاء الاصطناعي، يحلل ويجيب من
-        <strong>11 ورقة بحثية وكتاب</strong> عن أثر الرقمنة على التفاعلات الاجتماعية
-      </div>
-      <div class="stats-row">
-        <div class="stat-item">
-          <div class="stat-num">12</div>
-          <div class="stat-label">مصدر أكاديمي</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">RAG</div>
-          <div class="stat-label">تقنية الاسترجاع</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">70B</div>
-          <div class="stat-label">Llama 3.3</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">AR/EN</div>
-          <div class="stat-label">ثنائي اللغة</div>
+      
+      <div class="hero-right">
+        <div class="hero-image-wrap">
+          <div class="float-badge float-badge-1">💡</div>
+          <div class="float-badge float-badge-2">🏆</div>
+          <div class="float-badge float-badge-3">🎯</div>
+          <div class="float-badge float-badge-4">📖</div>
+          <div class="hero-image-inner">📚</div>
         </div>
       </div>
     </div>
     """, unsafe_allow_html=True)
-
-    # Example questions
-    examples = [
-        ("🏠", "كيف تؤثر الرقمنة على كبار السن وعلاقاتهم الاجتماعية؟"),
-        ("☕", "What is the impact of digital devices on face-to-face interaction in Cairo coffeehouses?"),
-        ("🌐", "ما علاقة الرقمنة بالهوية الاجتماعية وتكوين المجموعات على الإنترنت؟"),
-    ]
-
-    cols = st.columns(1)
-    for icon, ex in examples:
-        if st.button(f"{icon}  {ex}", key=f"ex_{ex[:15]}", use_container_width=True):
-            st.session_state.messages.append({"role": "user", "content": ex})
+    
+    # Search bar as start button
+    st.markdown('<div style="max-width:900px; margin:0 auto; padding:0 48px 40px 48px;">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([2, 3, 2])
+    with col2:
+        if st.button("🔍  ابدأ البحث الآن — Start Researching", key="start_btn", use_container_width=True):
+            st.session_state.started = True
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Bottom cards (like Book.com)
+    st.markdown("""
+    <div class="bottom-section">
+      <div class="bottom-card">
+        <div class="card-tag">جديد · 2024</div>
+        <div class="card-title">هل قرأت آخر الأبحاث عن الرقمنة الاجتماعية؟</div>
+      </div>
+      <div class="bottom-card">
+        <div class="card-tag muted">Study · #05</div>
+        <div class="card-title">كبار السن والتكنولوجيا: كيف تغيرت علاقاتهم؟</div>
+      </div>
+      <div class="bottom-card">
+        <div class="card-tag muted">Study · #08</div>
+        <div class="card-title">مقاهي القاهرة: التفاعل وجهاً لوجه في عصر الشاشات</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)  # close main-card
 
 else:
-    # ===== CHAT MESSAGES =====
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    # ===== CHAT INTERFACE =====
+    st.markdown(f"""
+    <div class="chat-wrapper">
+      <div class="chat-header">
+        <div class="chat-header-icon">و</div>
+        <div class="chat-header-text">
+          <div class="chat-header-title">محادثة مع وصال</div>
+          <div class="chat-header-sub">مدعوم بـ Llama 3.3 · RAG على 12 مصدر أكاديمي</div>
+        </div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
     
+    # Example prompts (if no messages yet)
+    if len(st.session_state.messages) == 0:
+        st.markdown('<div style="max-width:900px; margin:0 auto; padding:0 48px 24px 48px;">', unsafe_allow_html=True)
+        st.markdown('<div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px; text-align:right; direction:rtl;">✨ جرّب أحد هذه الأسئلة:</div>', unsafe_allow_html=True)
+        
+        examples = [
+            ("🏠", "كيف تؤثر الرقمنة على كبار السن وعلاقاتهم الاجتماعية؟"),
+            ("☕", "What is the impact of digital devices on face-to-face interaction in Cairo coffeehouses?"),
+            ("🌐", "ما علاقة الرقمنة بالهوية الاجتماعية وتكوين المجموعات على الإنترنت؟"),
+        ]
+        for icon, ex in examples:
+            if st.button(f"{icon}   {ex}", key=f"ex_{ex[:15]}", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": ex})
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Render chat
+    st.markdown('<div style="max-width:900px; margin:0 auto; padding:0 48px;">', unsafe_allow_html=True)
     for m in st.session_state.messages:
         lang = detect_lang(m["content"])
         is_rtl = lang == "ar"
+        cls = "rtl" if is_rtl else ""
         
         if m["role"] == "user":
-            cls = "rtl" if is_rtl else ""
-            with st.chat_message("user"):
-                st.markdown(
-                    f'<div class="user-bubble {cls}">{m["content"]}</div>',
-                    unsafe_allow_html=True
-                )
+            st.markdown(f"""
+            <div style="display:flex; margin-bottom:16px;">
+              <div class="user-bubble {cls}">{m["content"]}</div>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            with st.chat_message("assistant"):
-                ans_lang = detect_lang(m["content"])
-                cls = "rtl" if ans_lang == "ar" else "ltr"
-                
-                st.markdown(f"""
-                <div class="assistant-msg">
-                  <div class="assistant-content {cls}">{m["content"]}</div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                if "sources" in m and m["sources"]:
-                    src_cls = "rtl" if ans_lang == "ar" else ""
-                    html = f'<div class="sources-panel {src_cls}"><div class="sources-header">📚 المصادر · SOURCES ({len(m["sources"])})</div>'
-                    for i, s in enumerate(m["sources"], 1):
-                        html += f"""
-                        <div class="source-row">
-                          <div class="source-num">{i}</div>
-                          <div class="source-info">
-                            <div class="source-title">{s.get('title','')[:90]}</div>
-                            <div class="source-meta">{s.get('authors','')[:50]} · {s.get('publication_year','')}</div>
-                          </div>
-                        </div>"""
-                    html += '</div>'
-                    st.markdown(html, unsafe_allow_html=True)
-    
+            st.markdown(f"""
+            <div class="assistant-wrap {cls}" style="margin-bottom:20px;">
+              <div class="assistant-avatar">و</div>
+              <div class="assistant-body {cls}">{m["content"]}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if "sources" in m and m["sources"]:
+                srcs_html = f'<div style="max-width:90%; margin:{"0 0 20px 54px" if not is_rtl else "0 54px 20px 0"};"><div class="sources-block"><div class="sources-title">📚 المصادر · SOURCES ({len(m["sources"])})</div>'
+                for i, s in enumerate(m["sources"], 1):
+                    srcs_html += f"""
+                    <div class="source-line">
+                      <div class="source-num-badge">{i}</div>
+                      <div class="source-content">
+                        <div class="source-name">{s.get('title','')[:90]}</div>
+                        <div class="source-authors">{s.get('authors','')[:50]} · {s.get('publication_year','')}</div>
+                      </div>
+                    </div>"""
+                srcs_html += '</div></div>'
+                st.markdown(srcs_html, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)  # close main-card
 
 # ===== INPUT =====
-if prompt := st.chat_input("اسأل عن أثر الرقمنة... / Ask about digitalization..."):
-    lang = detect_lang(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    with st.chat_message("user"):
-        cls = "rtl" if lang == "ar" else ""
-        st.markdown(f'<div class="user-bubble {cls}">{prompt}</div>', unsafe_allow_html=True)
-    
-    with st.chat_message("assistant"):
-        with st.spinner(""):
-            key = get_key()
-            if not key:
-                st.error("⚠️ Add OPENROUTER_API_KEY to Secrets")
-                st.stop()
-            
-            pkg = build_pkg(prompt, df, bm25)
-            
-            if not pkg["ctx"]:
-                ans = "لم أجد مصادر كافية في قاعدة البيانات. جرب صياغة مختلفة للسؤال."
-                st.markdown(f'<div class="assistant-content rtl">{ans}</div>', unsafe_allow_html=True)
-                st.session_state.messages.append({"role": "assistant", "content": ans, "sources": []})
-            else:
-                try:
-                    client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=key)
-                    
-                    sys_prompt = (
-                        "أنت وصال، مساعد أكاديمي متخصص في السوسيولوجيا الرقمية. "
-                        "استخدم السياق المعطى فقط للإجابة. إذا لم تكن المعلومات كافية "
-                        "قل: لا توجد معلومات كافية في المصادر المتاحة. "
-                        "اذكر المصدر (المؤلف، السنة) عند الاستشهاد. "
-                        "جاوب بنفس لغة السؤال. كن دقيقاً وأكاديمياً.\n\n"
-                        f"السياق:\n{pkg['ctx']}"
-                    )
-                    
-                    resp = client.chat.completions.create(
-                        model=MODEL,
-                        messages=[
-                            {"role": "system", "content": sys_prompt},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0.2,
-                    )
-                    
-                    ans = resp.choices[0].message.content
-                    ans_lang = detect_lang(ans)
-                    cls = "rtl" if ans_lang == "ar" else "ltr"
-                    
-                    st.markdown(f'<div class="assistant-content {cls}">{ans}</div>', unsafe_allow_html=True)
-                    
-                    src_list = (
-                        pkg["df"][["title", "authors", "publication_year"]]
-                        .drop_duplicates()
-                        .to_dict("records")
-                        if len(pkg["df"]) else []
-                    )
-                    
-                    if src_list:
-                        src_cls = "rtl" if ans_lang == "ar" else ""
-                        html = f'<div class="sources-panel {src_cls}"><div class="sources-header">📚 المصادر · SOURCES ({len(src_list)})</div>'
-                        for i, s in enumerate(src_list, 1):
-                            html += f"""
-                            <div class="source-row">
-                              <div class="source-num">{i}</div>
-                              <div class="source-info">
-                                <div class="source-title">{s.get('title','')[:90]}</div>
-                                <div class="source-meta">{s.get('authors','')[:50]} · {s.get('publication_year','')}</div>
-                              </div>
-                            </div>"""
-                        html += '</div>'
-                        st.markdown(html, unsafe_allow_html=True)
-                    
-                    st.session_state.messages.append({
-                        "role": "assistant",
-                        "content": ans,
-                        "sources": src_list
-                    })
-                    
-                except Exception as e:
-                    st.error(f"خطأ: {e}")
+if st.session_state.started or len(st.session_state.messages) > 0:
+    if prompt := st.chat_input("اسأل عن أثر الرقمنة... / Ask about digitalization..."):
+        st.session_state.started = True
+        lang = detect_lang(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        
+        key = get_key()
+        if not key:
+            st.error("⚠️ Add OPENROUTER_API_KEY to Secrets"); st.stop()
+        
+        pkg = build_pkg(prompt, df, bm25)
+        
+        if not pkg["ctx"]:
+            ans = "لم أجد مصادر كافية في قاعدة البيانات. جرب صياغة مختلفة للسؤال."
+            st.session_state.messages.append({"role": "assistant", "content": ans, "sources": []})
+        else:
+            try:
+                client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=key)
+                sys_prompt = (
+                    "أنت وصال، مساعد أكاديمي متخصص في السوسيولوجيا الرقمية. "
+                    "استخدم السياق فقط. إذا غير كاف قل: لا توجد معلومات كافية. "
+                    "اذكر المصدر (المؤلف، السنة). جاوب بنفس لغة السؤال.\n\n"
+                    f"السياق:\n{pkg['ctx']}"
+                )
+                resp = client.chat.completions.create(
+                    model=MODEL,
+                    messages=[
+                        {"role": "system", "content": sys_prompt},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.2,
+                )
+                ans = resp.choices[0].message.content
+                src_list = (
+                    pkg["df"][["title", "authors", "publication_year"]]
+                    .drop_duplicates()
+                    .to_dict("records")
+                    if len(pkg["df"]) else []
+                )
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": ans,
+                    "sources": src_list
+                })
+            except Exception as e:
+                st.error(f"خطأ: {e}")
         
         st.rerun()
-
-# ===== FOOTER =====
-st.markdown("""
-<div class="footer">
-  <div class="footer-text">
-    <span class="footer-brand">وصال WESAL</span> — مشروع بحثي أكاديمي<br>
-    Powered by Llama 3.3 70B via OpenRouter · RAG over 12 academic sources
-  </div>
-</div>
-""", unsafe_allow_html=True)
