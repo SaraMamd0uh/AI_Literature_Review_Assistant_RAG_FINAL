@@ -1,684 +1,107 @@
-"""
-WESAL v4 - FIXED VERSION
-- إصلاح مشكلة الرد على الأسئلة الجاهزة
-- Logic موحد للـ AI response
-"""
-import os, re
-from pathlib import Path
-import streamlit as st
-import pandas as pd
-import numpy as np
-from rank_bm25 import BM25Okapi
-from openai import OpenAI
 
-CHUNKS_PATH = Path("data/chunks.parquet")
-MODEL = "meta-llama/llama-3.3-70b-instruct:free"
+import { motion } from "framer-motion";
+import { ArrowLeft, BookOpen, ShieldCheck } from "lucide-react";
+import heroImg from "@/assets/hero-social-work.jpg";
+import { Award, Lightbulb, Search, Target } from "lucide-react";
+import heroImg from "@/assets/hero-books.jpg";
 
-st.set_page_config(
-    page_title="وصال — أثر الرقمنة على التفاعلات الاجتماعية",
-    page_icon="📚",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+const Hero = () => {
 
-# ===== نفس الـ CSS بتاع النسخة السابقة =====
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
+  return (
+    <section className="relative pt-32 pb-20 overflow-hidden paper-dots">
+      <div className="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
+      <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-2 gap-12 items-center relative">
+    <section className="relative pt-28 sm:pt-32 pb-16 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-2 gap-10 lg:gap-6 items-center">
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <span className="eyebrow">
+            <span className="w-6 h-px bg-accent" />
+            منصّة معرفية للمؤسسات
+          </span>
+          <h1 className="mt-4 text-4xl sm:text-5xl lg:text-[3.4rem] leading-[1.15] text-foreground">
+            مساعد ذكي متخصص في
+            <span className="block text-primary">الخدمة الاجتماعية وعلم الاجتماع</span>
+          <h1 className="text-4xl sm:text-5xl lg:text-[3.6rem] font-extrabold leading-[1.2] text-foreground">
+            اعثر على الإجابة
+            <span className="block">التي تبحث عنها في</span>
+            <span className="block text-primary">الخدمة الاجتماعية.</span>
+          </h1>
+          <p className="mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl">
+            اسأل عن أي مفهوم، نظرية، أداة تدخل مهني أو منهج بحث — واحصل على إجابة دقيقة مستندة إلى
+            مكتبة من الكتب والمراجع الأكاديمية، مع ذكر المصدر ورقم الصفحة في كل إجابة.
+          <p className="mt-5 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md">
+            مساعد ذكي يجيبك من كتب ومراجع الخدمة الاجتماعية وعلم الاجتماع، مع ذكر المصدر ورقم الصفحة.
+          </p>
 
-:root {
-    --bg: #F8F5F0;
-    --bg-card: #FFFFFF;
-    --bg-soft: #FAF7F2;
-    --bg-accent: #F0EBE3;
-    --primary: #1A1A2E;
-    --primary-soft: #2D2D44;
-    --accent: #7BA98F;
-    --accent-dark: #5C8A70;
-    --accent-warm: #E8C4A0;
-    --accent-purple: #A594C7;
-    --accent-orange: #F4A574;
-    --text: #1A1A2E;
-    --text-muted: #6B6B7D;
-    --text-light: #9B9BA8;
-    --border: #E8E3DB;
-    --shadow-sm: 0 2px 8px rgba(26,26,46,0.04);
-    --shadow-md: 0 8px 24px rgba(26,26,46,0.08);
-    --shadow-lg: 0 20px 60px rgba(26,26,46,0.12);
-    --radius: 16px;
-    --radius-lg: 28px;
-}
+          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex items-center gap-2 bg-card rounded-full p-2 pr-5 border border-border shadow-soft max-w-md">
+            <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+            <input
+              readOnly
+              onFocus={() => go("chat")}
+              placeholder="اكتب سؤالك المهني هنا…"
+              className="flex-1 min-w-0 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
+            />
+            <button
+              onClick={() => go("chat")}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity shadow-soft"
+              className="shrink-0 px-6 py-3 rounded-full bg-accent text-accent-foreground text-sm font-bold hover:opacity-90 transition-opacity"
+            >
+              جرّب المساعد الآن
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => go("library")}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-secondary text-secondary-foreground font-bold text-sm hover:bg-secondary/70 transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              استعرض المكتبة
+              ابحث
+            </button>
+          </div>
 
-html, body, [class*="css"] {
-    font-family: 'Tajawal', 'Inter', sans-serif !important;
-    background: var(--bg) !important;
-    color: var(--text) !important;
-}
-.stApp { background: var(--bg) !important; }
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-primary" /> إجابات موثّقة بالمصدر
+            </span>
+          <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+            <span>+٤٠٠ مرجع أكاديمي</span>
+            <span>دعم كامل للعربية والإنجليزية</span>
+            <span>إجابات موثّقة بالمصدر</span>
+            <span>عربي وإنجليزي</span>
+          </div>
+        </motion.div>
+          className="relative"
+        >
+          <div className="rounded-3xl overflow-hidden border border-border shadow-soft">
+            <img
+              src={heroImg}
+              alt="شبكة من الأفراد والكتب ترمز إلى المعرفة في الخدمة الاجتماعية وعلم الاجتماع"
+              width={1536}
+              height={1024}
+              className="w-full h-auto"
+            />
+          </div>
+          <div className="absolute -bottom-6 right-6 surface-card px-5 py-4 max-w-[15rem] hidden sm:block">
+            <p className="text-xs text-muted-foreground">دقة الإجابات المرجعية</p>
+            <p className="text-2xl font-extrabold text-primary mt-1">٩٦٪</p>
+          </div>
+          <img
+            src={heroImg}
+            alt="يد تحمل مجموعة كتب في الخدمة الاجتماعية وعلم الاجتماع"
+            width={1200}
+            height={1200}
+            className="w-full h-auto max-w-md mx-auto"
+          />
 
-#MainMenu, footer, header,
-div[data-testid="stToolbar"],
-div[data-testid="stDecoration"] {
-    visibility: hidden !important;
-    display: none !important;
-}
-
-.block-container {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    max-width: 100% !important;
-}
-
-.main-card {
-    max-width: 1240px;
-    margin: 24px auto;
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    position: relative;
-}
-
-.deco-circle-1 {
-    position: fixed;
-    top: 50px;
-    left: -60px;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(232,196,160,0.3), transparent);
-    z-index: 0;
-    pointer-events: none;
-}
-.deco-circle-2 {
-    position: fixed;
-    bottom: 100px;
-    right: -80px;
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(165,148,199,0.25), transparent);
-    z-index: 0;
-    pointer-events: none;
-}
-
-.top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 48px;
-    border-bottom: 1px solid var(--border);
-}
-.nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-logo-img {
-    width: 42px; height: 42px; border-radius: 12px; object-fit: contain;
-}
-.nav-logo-fallback {
-    width: 42px; height: 42px; border-radius: 12px;
-    background: var(--primary); color: white;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 20px; font-family: 'Playfair Display', serif;
-}
-.brand-text {
-    font-weight: 900; font-size: 1.5rem;
-    color: var(--primary); letter-spacing: -0.02em;
-}
-.brand-text .dot { color: var(--accent); }
-.nav-links { display: flex; gap: 40px; align-items: center; }
-.nav-link {
-    color: var(--text-muted); font-size: 0.92rem; font-weight: 500;
-    cursor: pointer; transition: color 0.2s; text-decoration: none;
-}
-.nav-link:hover { color: var(--primary); }
-.nav-link.active { color: var(--primary); font-weight: 600; }
-.nav-right { display: flex; gap: 12px; align-items: center; }
-.btn-login {
-    color: var(--primary); font-weight: 600; padding: 10px 20px;
-    background: transparent; border: none; cursor: pointer; font-size: 0.92rem;
-}
-.btn-primary {
-    background: var(--primary); color: white; padding: 12px 26px;
-    border-radius: 100px; font-weight: 600; font-size: 0.9rem;
-    border: none; cursor: pointer; transition: all 0.2s;
-}
-.btn-primary:hover {
-    background: var(--accent-dark); transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(26,26,46,0.2);
-}
-
-.hero {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    padding: 60px 48px 40px 48px;
-    align-items: center;
-    position: relative;
-}
-.hero-left { position: relative; z-index: 2; }
-.hero-title {
-    font-family: 'Tajawal', sans-serif;
-    font-size: 4rem; font-weight: 900; line-height: 1.05;
-    color: var(--primary); letter-spacing: -0.03em;
-    margin-bottom: 24px; direction: rtl; text-align: right;
-}
-.hero-title .highlight {
-    color: var(--accent-dark); position: relative; display: inline-block;
-}
-.hero-title .highlight::after {
-    content: ''; position: absolute; bottom: 4px; left: 0; right: 0;
-    height: 12px; background: var(--accent-warm); opacity: 0.4;
-    z-index: -1; border-radius: 4px;
-}
-.hero-subtitle {
-    font-size: 1.05rem; color: var(--text-muted); line-height: 1.8;
-    max-width: 480px; margin-bottom: 32px;
-    direction: rtl; text-align: right; font-weight: 400;
-}
-.hero-right {
-    position: relative; display: flex;
-    justify-content: center; align-items: center; min-height: 480px;
-}
-.hero-image-wrap {
-    position: relative; width: 100%; height: 480px;
-    background: linear-gradient(135deg, #F4E8D8 0%, #E8D4B8 100%);
-    border-radius: 24px;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-}
-.hero-image-inner {
-    font-size: 12rem;
-    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
-    animation: float-hero 6s ease-in-out infinite;
-}
-@keyframes float-hero {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-15px) rotate(2deg); }
-}
-.float-badge {
-    position: absolute; background: white; padding: 14px;
-    border-radius: 16px; box-shadow: var(--shadow-md);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; animation: float-badge 4s ease-in-out infinite;
-}
-.float-badge-1 { top: 40px; left: 20px; background: #E8F4EC; animation-delay: 0s; }
-.float-badge-2 { top: 100px; right: 20px; background: #EDE8F5; animation-delay: 1s; }
-.float-badge-3 { bottom: 80px; left: 40px; background: #FDF0E4; animation-delay: 2s; }
-.float-badge-4 { bottom: 40px; right: 60px; background: #E8F0FB; animation-delay: 1.5s; }
-@keyframes float-badge {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.bottom-section {
-    padding: 40px 48px 48px 48px;
-    border-top: 1px solid var(--border);
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 40px; direction: rtl;
-}
-.bottom-card { cursor: pointer; transition: transform 0.2s; }
-.bottom-card:hover { transform: translateY(-4px); }
-.card-tag {
-    font-size: 0.75rem; color: var(--accent-dark); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
-}
-.card-tag.muted { color: var(--text-light); }
-.card-title {
-    font-size: 1.15rem; font-weight: 700;
-    color: var(--primary); line-height: 1.5; letter-spacing: -0.01em;
-}
-
-.chat-wrapper {
-    max-width: 900px; margin: 0 auto; padding: 40px 48px;
-}
-.chat-header {
-    display: flex; align-items: center; gap: 16px;
-    margin-bottom: 32px; padding-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-    direction: rtl;
-}
-.chat-header-icon {
-    width: 48px; height: 48px; border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 22px; font-weight: 900;
-    font-family: 'Playfair Display', serif;
-}
-.chat-header-text { flex: 1; text-align: right; }
-.chat-header-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-.chat-header-sub { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
-
-.user-bubble {
-    background: var(--primary); color: white;
-    border-radius: 20px 20px 6px 20px;
-    padding: 16px 22px; max-width: 75%;
-    line-height: 1.7; font-size: 0.96rem;
-    box-shadow: var(--shadow-sm);
-}
-.user-bubble.rtl {
-    direction: rtl; text-align: right;
-    border-radius: 20px 20px 20px 6px;
-}
-
-.assistant-wrap {
-    display: flex; gap: 14px; max-width: 90%; margin-bottom: 8px;
-}
-.assistant-wrap.rtl { direction: rtl; }
-.assistant-avatar {
-    width: 40px; height: 40px; border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 16px; font-weight: 800;
-    font-family: 'Playfair Display', serif; flex-shrink: 0;
-}
-.assistant-body {
-    flex: 1; background: var(--bg-soft);
-    border: 1px solid var(--border); border-radius: 20px;
-    padding: 18px 22px; line-height: 1.9;
-    font-size: 0.98rem; color: var(--text);
-}
-.assistant-body.rtl { direction: rtl; text-align: right; }
-
-.sources-block {
-    margin-top: 14px; padding: 16px; background: white;
-    border: 1px solid var(--border); border-radius: 14px;
-}
-.sources-title {
-    font-size: 0.72rem; color: var(--text-light); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: 12px; direction: rtl; text-align: right;
-}
-.source-line {
-    padding: 10px 0; border-top: 1px solid var(--border);
-    font-size: 0.86rem; display: flex; gap: 10px; align-items: flex-start;
-    direction: rtl; text-align: right;
-}
-.source-line:first-of-type { border-top: none; padding-top: 0; }
-.source-num-badge {
-    width: 22px; height: 22px; background: var(--accent);
-    color: white; border-radius: 6px; font-size: 0.72rem;
-    font-weight: 700; display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0;
-    font-family: 'Inter', sans-serif;
-}
-.source-content { flex: 1; }
-.source-name {
-    color: var(--primary); font-weight: 600; line-height: 1.5;
-}
-.source-authors {
-    color: var(--text-muted); font-size: 0.78rem; margin-top: 2px;
-}
-
-.stChatInput {
-    max-width: 900px; margin: 0 auto; padding: 0 48px;
-}
-.stChatInput > div {
-    border-radius: 100px !important;
-    border: 1px solid var(--border) !important;
-    background: white !important;
-    box-shadow: var(--shadow-md) !important;
-    padding: 6px !important;
-}
-.stChatInput > div:focus-within {
-    border-color: var(--accent) !important;
-    box-shadow: 0 8px 24px rgba(123,169,143,0.2) !important;
-}
-.stChatInput textarea {
-    color: var(--text) !important;
-    font-family: 'Tajawal', sans-serif !important;
-    font-size: 0.96rem !important;
-    background: transparent !important;
-}
-.stChatInput textarea::placeholder { color: var(--text-light) !important; }
-
-.stButton > button {
-    background: white !important;
-    border: 1px solid var(--border) !important;
-    color: var(--primary) !important;
-    border-radius: 14px !important;
-    padding: 16px 22px !important;
-    text-align: right !important; direction: rtl !important;
-    font-family: 'Tajawal', sans-serif !important;
-    font-size: 0.92rem !important; line-height: 1.7 !important;
-    font-weight: 500 !important;
-    transition: all 0.2s !important;
-    width: 100% !important;
-    box-shadow: var(--shadow-sm) !important;
-}
-.stButton > button:hover {
-    background: var(--bg-soft) !important;
-    border-color: var(--accent) !important;
-    color: var(--primary) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: var(--shadow-md) !important;
-}
-
-.stChatMessage {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 4px 0 !important;
-}
-.stChatMessage [data-testid="chatAvatarIcon-assistant"],
-.stChatMessage [data-testid="chatAvatarIcon-user"] {
-    display: none !important;
-}
-
-@media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; padding: 40px 24px; }
-    .hero-title { font-size: 2.5rem; }
-    .bottom-section { grid-template-columns: 1fr; padding: 32px 24px; gap: 20px; }
-    .top-nav { padding: 20px 24px; flex-wrap: wrap; gap: 12px; }
-    .nav-links { display: none; }
-    .hero-image-wrap { height: 320px; }
-    .hero-image-inner { font-size: 8rem; }
-    .chat-wrapper { padding: 24px; }
-    .stChatInput { padding: 0 24px; }
-}
-</style>
-""", unsafe_allow_html=True)
-
-# --- Helpers ---
-def norm_ws(t): return re.sub(r"\s+", " ", t).strip()
-AR_DIAC = re.compile(r"[\u064B-\u0652\u0670\u0640]")
-def norm_ar(t):
-    t = AR_DIAC.sub("", t)
-    t = re.sub(r"[إأآ]", "ا", t); t = re.sub(r"ى", "ي", t)
-    t = re.sub(r"[^\u0600-\u06FF\s0-9]", " ", t)
-    return norm_ws(t)
-def norm_en(t): return norm_ws(re.sub(r"[^\w\s]", " ", t.lower()))
-def detect_lang(t):
-    ar = re.compile(r"[\u0600-\u06FF]")
-    letters = re.findall(r"[^\W\d_]", t, re.UNICODE)
-    if not letters: return "en"
-    return "ar" if len(ar.findall(t)) / len(letters) >= 0.15 else "en"
-def tok(t):
-    t = norm_ar(t) if detect_lang(t) == "ar" else norm_en(t)
-    return re.findall(r"[a-z0-9]+|[\u0600-\u06FF]+", t.lower())
-
-@st.cache_resource(show_spinner=False)
-def get_index():
-    if not CHUNKS_PATH.exists():
-        return None, "no_data"
-    df = pd.read_parquet(CHUNKS_PATH)
-    tokenized = [tok(t) for t in df["search_text"]]
-    bm25 = BM25Okapi(tokenized)
-    return (df, bm25), None
-
-def build_pkg(q, df, bm25):
-    sc = bm25.get_scores(tok(q))
-    rank = np.argsort(sc)[::-1][:10]
-    cands = df.iloc[rank].copy()
-    cands["score"] = sc[rank]
-    top = cands["score"].max() if len(cands) else 0
-    cands = cands[cands["score"] >= top * 0.25].head(4)
-    lines, rows, used = [], [], 0
-    for _, r in cands.iterrows():
-        if used + len(r["chunk_text"].split()) > 620: continue
-        lines.append(f"[{r['title']} — {r['authors']} ({r['publication_year']})]\n{r['chunk_text']}")
-        rows.append(r); used += len(r["chunk_text"].split())
-    return {"ctx": "\n\n".join(lines), "df": pd.DataFrame(rows)}
-
-def get_key():
-    if "OPENROUTER_API_KEY" in st.secrets: return st.secrets["OPENROUTER_API_KEY"]
-    if "API" in st.secrets: return st.secrets["API"]
-    return os.environ.get("OPENROUTER_API_KEY")
-
-# ======================================================
-# ✅ الدالة الجديدة الموحدة للـ AI Response
-# ======================================================
-def generate_response(prompt_text, df, bm25):
-    """توليد رد من الـ AI - تشتغل من أي حتة"""
-    key = get_key()
-    if not key:
-        return "⚠️ لم يتم إعداد OPENROUTER_API_KEY في Secrets", []
-    
-    pkg = build_pkg(prompt_text, df, bm25)
-    
-    if not pkg["ctx"]:
-        return "لم أجد مصادر كافية في قاعدة البيانات. جرب صياغة مختلفة للسؤال.", []
-    
-    try:
-        client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=key)
-        sys_prompt = (
-            "أنت وصال، مساعد أكاديمي متخصص في السوسيولوجيا الرقمية. "
-            "استخدم السياق فقط للإجابة. إذا غير كاف قل: لا توجد معلومات كافية في المصادر. "
-            "اذكر المصدر (المؤلف، السنة) عند الاستشهاد. "
-            "جاوب بنفس لغة السؤال. كن دقيقاً وأكاديمياً.\n\n"
-            f"السياق:\n{pkg['ctx']}"
-        )
-        resp = client.chat.completions.create(
-            model=MODEL,
-            messages=[
-                {"role": "system", "content": sys_prompt},
-                {"role": "user", "content": prompt_text}
-            ],
-            temperature=0.2,
-        )
-        ans = resp.choices[0].message.content
-        src_list = (
-            pkg["df"][["title", "authors", "publication_year"]]
-            .drop_duplicates()
-            .to_dict("records")
-            if len(pkg["df"]) else []
-        )
-        return ans, src_list
-    except Exception as e:
-        return f"⚠️ حدث خطأ: {str(e)}", []
-
-
-# ======================================================
-# START RENDERING
-# ======================================================
-
-st.markdown('<div class="deco-circle-1"></div><div class="deco-circle-2"></div>', unsafe_allow_html=True)
-
-logo_url = "https://raw.githubusercontent.com/SaraMamd0uh/AI_Literature_Review_Assistant_RAG_FINAL/main/logo.png"
-
-st.markdown(f"""
-<div class="main-card">
-  <div class="top-nav">
-    <div class="nav-brand">
-      <img src="{logo_url}" class="nav-logo-img" onerror="this.outerHTML='<div class=\\'nav-logo-fallback\\'>و</div>';">
-      <div class="brand-text">وصال<span class="dot">.</span></div>
-    </div>
-    <div class="nav-links">
-      <a class="nav-link active">الرئيسية</a>
-      <a class="nav-link">المصادر</a>
-      <a class="nav-link">حول المشروع</a>
-      <a class="nav-link">تواصل</a>
-    </div>
-    <div class="nav-right">
-      <button class="btn-login">تسجيل الدخول</button>
-      <button class="btn-primary">ابدأ الآن</button>
-    </div>
-  </div>
-""", unsafe_allow_html=True)
-
-(index_data, err) = get_index()
-if err:
-    st.error("⚠️ data/chunks.parquet not found"); st.stop()
-df, bm25 = index_data
-
-# Session state
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "started" not in st.session_state:
-    st.session_state.started = False
-# ✅ متغير جديد لتتبع الأسئلة المعلقة
-if "pending_question" not in st.session_state:
-    st.session_state.pending_question = None
-
-
-# ===== LANDING PAGE =====
-if not st.session_state.started and len(st.session_state.messages) == 0:
-    st.markdown("""
-    <div class="hero">
-      <div class="hero-left">
-        <div class="hero-title">
-          اكتشف أثر <span class="highlight">الرقمنة</span><br>
-          على تفاعلاتنا<br>
-          الاجتماعية
-        </div>
-        <div class="hero-subtitle">
-          مساعد بحثي أكاديمي ذكي يجيبك من 12 مصدر علمي محكّم
-          عن التحولات الاجتماعية في العصر الرقمي
-        </div>
+          <span className="float-chip bg-secondary top-6 right-2 sm:right-6">
+            <Lightbulb className="w-6 h-6 text-primary" />
+          </span>
+          <span className="float-chip bg-card top-20 left-2 sm:left-4">
+            <Award className="w-6 h-6 text-accent" />
+          </span>
+          <span className="float-chip bg-secondary bottom-16 left-6 sm:left-12">
+            <Target className="w-6 h-6 text-primary" />
+          </span>
+        </motion.div>
       </div>
-      <div class="hero-right">
-        <div class="hero-image-wrap">
-          <div class="float-badge float-badge-1">💡</div>
-          <div class="float-badge float-badge-2">🏆</div>
-          <div class="float-badge float-badge-3">🎯</div>
-          <div class="float-badge float-badge-4">📖</div>
-          <div class="hero-image-inner">📚</div>
-        </div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('<div style="max-width:900px; margin:0 auto; padding:0 48px 40px 48px;">', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([2, 3, 2])
-    with col2:
-        if st.button("🔍  ابدأ البحث الآن — Start Researching", key="start_btn", use_container_width=True):
-            st.session_state.started = True
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div class="bottom-section">
-      <div class="bottom-card">
-        <div class="card-tag">جديد · 2024</div>
-        <div class="card-title">هل قرأت آخر الأبحاث عن الرقمنة الاجتماعية؟</div>
-      </div>
-      <div class="bottom-card">
-        <div class="card-tag muted">Study · #05</div>
-        <div class="card-title">كبار السن والتكنولوجيا: كيف تغيرت علاقاتهم؟</div>
-      </div>
-      <div class="bottom-card">
-        <div class="card-tag muted">Study · #08</div>
-        <div class="card-title">مقاهي القاهرة: التفاعل وجهاً لوجه في عصر الشاشات</div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)  # close main-card
-
-else:
-    # ===== CHAT INTERFACE =====
-    st.markdown("""
-    <div class="chat-wrapper">
-      <div class="chat-header">
-        <div class="chat-header-icon">و</div>
-        <div class="chat-header-text">
-          <div class="chat-header-title">محادثة مع وصال</div>
-          <div class="chat-header-sub">مدعوم بـ Llama 3.3 · RAG على 12 مصدر أكاديمي</div>
-        </div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # ===== Example prompts =====
-    if len(st.session_state.messages) == 0 and st.session_state.pending_question is None:
-        st.markdown('<div style="max-width:900px; margin:0 auto; padding:0 48px 24px 48px;">', unsafe_allow_html=True)
-        st.markdown('<div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px; text-align:right; direction:rtl;">✨ جرّب أحد هذه الأسئلة:</div>', unsafe_allow_html=True)
-        
-        examples = [
-            ("🏠", "كيف تؤثر الرقمنة على كبار السن وعلاقاتهم الاجتماعية؟"),
-            ("☕", "What is the impact of digital devices on face-to-face interaction in Cairo coffeehouses?"),
-            ("🌐", "ما علاقة الرقمنة بالهوية الاجتماعية وتكوين المجموعات على الإنترنت؟"),
-        ]
-        for icon, ex in examples:
-            if st.button(f"{icon}   {ex}", key=f"ex_{ex[:15]}", use_container_width=True):
-                # ✅ بدل ما نضيف الرسالة على طول، نحطها في pending
-                st.session_state.pending_question = ex
-                st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    # ===== Render existing messages =====
-    st.markdown('<div style="max-width:900px; margin:0 auto; padding:0 48px;">', unsafe_allow_html=True)
-    for m in st.session_state.messages:
-        lang = detect_lang(m["content"])
-        is_rtl = lang == "ar"
-        cls = "rtl" if is_rtl else ""
-        
-        if m["role"] == "user":
-            justify = "flex-end" if not is_rtl else "flex-start"
-            st.markdown(f"""
-            <div style="display:flex; justify-content:{justify}; margin-bottom:16px;">
-              <div class="user-bubble {cls}">{m["content"]}</div>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div class="assistant-wrap {cls}" style="margin-bottom:20px;">
-              <div class="assistant-avatar">و</div>
-              <div class="assistant-body {cls}">{m["content"]}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            if "sources" in m and m["sources"]:
-                margin_style = "0 54px 20px 0" if is_rtl else "0 0 20px 54px"
-                srcs_html = f'<div style="max-width:90%; margin:{margin_style};"><div class="sources-block"><div class="sources-title">📚 المصادر · SOURCES ({len(m["sources"])})</div>'
-                for i, s in enumerate(m["sources"], 1):
-                    srcs_html += f"""
-                    <div class="source-line">
-                      <div class="source-num-badge">{i}</div>
-                      <div class="source-content">
-                        <div class="source-name">{s.get('title','')[:90]}</div>
-                        <div class="source-authors">{s.get('authors','')[:50]} · {s.get('publication_year','')}</div>
-                      </div>
-                    </div>"""
-                srcs_html += '</div></div>'
-                st.markdown(srcs_html, unsafe_allow_html=True)
-    
-    # ===== ✅ معالجة السؤال المعلق (من الأزرار) =====
-    if st.session_state.pending_question is not None:
-        pending = st.session_state.pending_question
-        st.session_state.pending_question = None  # امسحه فوراً
-        
-        # اعرض سؤال المستخدم
-        lang = detect_lang(pending)
-        is_rtl = lang == "ar"
-        cls = "rtl" if is_rtl else ""
-        justify = "flex-end" if not is_rtl else "flex-start"
-        st.markdown(f"""
-        <div style="display:flex; justify-content:{justify}; margin-bottom:16px;">
-          <div class="user-bubble {cls}">{pending}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # ولّد الرد مع loading
-        with st.spinner("🤔 جاري البحث في المصادر..."):
-            ans, src_list = generate_response(pending, df, bm25)
-        
-        # ضيف الرسالتين للـ history
-        st.session_state.messages.append({"role": "user", "content": pending})
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": ans,
-            "sources": src_list
-        })
-        st.rerun()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)  # close main-card
-
-
-# ===== ✅ Chat Input (متاح دايماً في وضع الشات) =====
-if st.session_state.started or len(st.session_state.messages) > 0:
-    if prompt := st.chat_input("اسأل عن أثر الرقمنة... / Ask about digitalization..."):
-        st.session_state.started = True
-        
-        # اعرض السؤال فوراً
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        
-        # ولّد الرد
-        with st.spinner("🤔 جاري البحث في المصادر..."):
-            ans, src_list = generate_response(prompt, df, bm25)
-        
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": ans,
-            "sources": src_list
-        })
-        st.rerun()
