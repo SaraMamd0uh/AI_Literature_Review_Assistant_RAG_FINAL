@@ -1,10 +1,10 @@
 """
-WESAL - Full Landing Page PRO
-مستوحى 100% من تصميم الصورة اللي بعتيها - بتصميم عالمي
-Hero + Features + Chat + Sources + Steps
-Llama فقط - يحافظ على logo.png الأصلي
+PREMIUM UI - وصال WESAL - Llama فقط
+منصة أثر الرقمنة على التفاعلات الاجتماعية
+تصميم احترافي جداً - Section 16
 """
-import os, re
+import os
+import re
 from pathlib import Path
 import streamlit as st
 import pandas as pd
@@ -14,264 +14,297 @@ from openai import OpenAI
 
 CHUNKS_PATH = Path("data/chunks.parquet")
 MODEL = "meta-llama/llama-3.3-70b-instruct:free"
+BRAND_NAME_AR = "وصال"
+BRAND_NAME_EN = "WESAL"
+TAGLINE = "المساعد الذكي لاستكشاف أثر الرقمنة على التفاعلات الاجتماعية"
 
 st.set_page_config(
-    page_title="وصال - مساعد الخدمة الاجتماعية الذكي",
+    page_title=f"{BRAND_NAME_AR} | {BRAND_NAME_EN} - مساعد الأدبيات الرقمية",
     page_icon="📚",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
+# ===== PREMIUM CSS =====
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500&display=swap');
-* {font-family:'Tajawal',sans-serif;}
-#MainMenu, footer, header, [data-testid="stToolbar"] {display:none !important;}
-.stApp {background:#FDFCFB;}
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Inter:wght@400;600;700&display=swap');
 
-.topbar {
-  position:sticky; top:0; z-index:100;
-  background:rgba(253,252,251,0.9); backdrop-filter:blur(12px);
-  border-bottom:1px solid #EDE9E3;
-  height:60px; display:flex; align-items:center;
-  margin:-1rem -3rem 0 -3rem; padding:0 24px;
+* {font-family: 'Tajawal', 'Inter', sans-serif;}
+
+.main-header {
+    background: linear-gradient(135deg, #0F2167 0%, #1E3A8A 40%, #2EC4B6 100%);
+    padding: 2rem 2.5rem;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px rgba(15,33,103,0.25);
+    position: relative;
+    overflow: hidden;
 }
-.topbar-inner{max-width:1150px; width:100%; margin:0 auto; display:flex; justify-content:space-between; align-items:center;}
-.brand{display:flex; align-items:center; gap:10px; font-weight:700;}
-.nav-links{display:flex; gap:24px; font-size:13px; color:#78716C;}
-.nav-cta{background:#0F3D3E; color:white; padding:8px 18px; border-radius:100px; font-size:13px; font-weight:600;}
-
-/* HERO - like image 2 */
-.hero-sec{max-width:1150px; margin:0 auto; padding:48px 24px 40px 24px;}
-.hero-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; align-items:center;}
-@media(max-width:900px){.hero-grid{grid-template-columns:1fr;}}
-.hero-img{position:relative; background:white; border-radius:24px; padding:16px; border:1px solid #EDE9E3;}
-.hero-img img{width:100%; height:auto; border-radius:16px; object-fit:contain;}
-.float-chip{position:absolute; background:white; border:1px solid #E7E5E4; border-radius:14px; width:48px; height:48px; display:grid; place-items:center; box-shadow:0 8px 20px rgba(0,0,0,0.07); font-size:20px;}
-.fc1{top:16px; right:16px; animation:float 3s infinite;}
-.fc2{top:90px; left:12px; animation:float 3s infinite 0.5s;}
-.fc3{bottom:60px; left:32px; animation:float 3s infinite 1s;}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-
-.hero-title{font-size:38px; font-weight:800; line-height:1.25; color:#1C1917; direction:rtl; text-align:right; margin:0;}
-.hero-title .accent{color:#0F3D3E;}
-.hero-desc{margin-top:16px; font-size:15px; color:#78716C; line-height:1.8; direction:rtl; text-align:right; max-width:480px;}
-.hero-search{margin-top:28px; display:flex; gap:8px; background:white; border:1px solid #E7E5E4; border-radius:100px; padding:6px 6px 6px 16px; box-shadow:0 4px 20px rgba(0,0,0,0.05); max-width:440px; align-items:center;}
-.hero-search input{flex:1; border:none; outline:none; font-size:14px; direction:rtl; text-align:right; background:transparent;}
-.hero-search button{background:#14B8A6; color:white; border:none; padding:10px 22px; border-radius:100px; font-weight:700; font-size:13px; cursor:pointer;}
-.hero-meta{margin-top:20px; display:flex; gap:16px; font-size:12px; color:#A8A29E; direction:rtl;}
-
-.section{max-width:1150px; margin:0 auto; padding:56px 24px;}
-.section-title{font-size:22px; font-weight:700; text-align:center; margin-bottom:8px; color:#1C1917; direction:rtl;}
-.section-sub{font-size:14px; color:#78716C; text-align:center; margin-bottom:32px; direction:rtl;}
-.features{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
-@media(max-width:800px){.features{grid-template-columns:1fr 1fr;}}
-@media(max-width:500px){.features{grid-template-columns:1fr;}}
-.feat-card{background:white; border:1px solid #EDE9E3; border-radius:16px; padding:20px; direction:rtl; text-align:right; transition:all 0.2s;}
-.feat-card:hover{border-color:#D6D3D1; box-shadow:0 4px 12px rgba(0,0,0,0.04);}
-.feat-icon{width:36px; height:36px; background:#F5F5F4; border-radius:10px; display:grid; place-items:center; margin-bottom:12px; font-size:18px;}
-.feat-title{font-size:14px; font-weight:700; margin-bottom:6px;}
-.feat-desc{font-size:12.5px; color:#78716C; line-height:1.6;}
-
-.chat-demo{background:white; border:1px solid #EDE9E3; border-radius:20px; overflow:hidden; display:grid; grid-template-columns:1fr 1.2fr; box-shadow:0 8px 30px rgba(0,0,0,0.04);}
-@media(max-width:900px){.chat-demo{grid-template-columns:1fr;}}
-.chat-left{background:#0F3D3E; color:white; padding:24px;}
-.chat-right{padding:24px; background:#FAFAF9;}
-
-.step-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
-@media(max-width:700px){.step-grid{grid-template-columns:1fr;}}
-.step-card{background:white; border:1px solid #EDE9E3; border-radius:16px; padding:20px; text-align:center; direction:rtl;}
-.step-num{width:32px; height:32px; background:#0F3D3E; color:white; border-radius:50%; display:grid; place-items:center; margin:0 auto 12px auto; font-weight:700; font-size:14px;}
-
-/* Chat inside */
-.chat-wrap{max-width:720px; margin:0 auto;}
-.msg-user{background:#F5F5F4; border-radius:16px; padding:12px 16px; margin:12px 0 12px auto; max-width:85%; direction:rtl; text-align:right; font-size:14px; line-height:1.7;}
-.msg-assist{padding:16px 0; line-height:1.9; direction:rtl; text-align:right; border-bottom:1px solid #F5F5F4; font-size:15px;}
+.main-header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+.brand-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.brand-subtitle {
+    font-size: 1.1rem;
+    font-weight: 300;
+    opacity: 0.92;
+    line-height: 1.6;
+    max-width: 700px;
+}
+.stats-bar {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+}
+.stat-chip {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.chat-container {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+}
+.source-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-left: 4px solid #2EC4B6;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.6rem;
+    transition: all 0.2s;
+}
+.source-card:hover {
+    border-left-color: #0F2167;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.answer-box {
+    background: linear-gradient(180deg, #ffffff 0%, #F8FAFC 100%);
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 1.5rem;
+    line-height: 1.9;
+    font-size: 1.05rem;
+}
+.stChatMessage {
+    border-radius: 16px !important;
+}
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# Helpers
-def norm_ws(t): return re.sub(r"\s+"," ",t).strip()
-AR_D = re.compile(r"[\u064B-\u0652\u0670\u0640]")
+# --- Helpers ---
+def normalize_ws(t): return re.sub(r"\s+"," ",t).strip()
+AR_DIAC = re.compile(r"[\u064B-\u0652\u0670\u0640]")
 def norm_ar(t):
-    t=AR_D.sub("",t); t=re.sub(r"[إأآ]","ا",t); t=re.sub(r"ى","ي",t); t=re.sub(r"[^\u0600-\u06FF\s0-9]"," ",t); return norm_ws(t)
-def norm_en(t): return norm_ws(re.sub(r"[^\w\s]"," ",t.lower()))
-def detect(t):
-    ar=re.compile(r"[\u0600-\u06FF]"); lets=re.findall(r"[^\W\d_]",t,re.UNICODE)
-    if not lets: return "en"
-    return "ar" if len(ar.findall(t))/len(lets)>=0.15 else "en"
-def lex(t): return norm_ar(t) if detect(t)=="ar" else norm_en(t)
-def tok(t): return re.findall(r"[a-z0-9]+|[\u0600-\u06FF]+", lex(t).lower())
+    t = AR_DIAC.sub("",t)
+    t = re.sub(r"[إأآ]","ا",t); t = re.sub(r"ى","ي",t)
+    t = re.sub(r"[^\u0600-\u06FF\s0-9]"," ",t)
+    return normalize_ws(t)
+def norm_en(t): return normalize_ws(re.sub(r"[^\w\s]"," ",t.lower()))
+def detect_lang(t):
+    ar = re.compile(r"[\u0600-\u06FF]")
+    letters = re.findall(r"[^\W\d_]", t, re.UNICODE)
+    if not letters: return "unknown"
+    return "ar" if len(ar.findall(t))/len(letters)>=0.15 else "en"
+def norm_lex(t): return norm_ar(t) if detect_lang(t)=="ar" else norm_en(t)
+def simple_tok(t):
+    t = norm_lex(t)
+    return re.findall(r"[a-z0-9]+|[\u0600-\u06FF]+", t.lower())
 
 @st.cache_resource(show_spinner=False)
 def get_index():
-    if not CHUNKS_PATH.exists(): return None, "no_data"
-    df=pd.read_parquet(CHUNKS_PATH)
-    bm=BM25Okapi([tok(x) for x in df["search_text"]])
-    return (df,bm), None
+    if not CHUNKS_PATH.exists():
+        return None, f"ملف {CHUNKS_PATH} غير موجود"
+    df = pd.read_parquet(CHUNKS_PATH)
+    tok = [simple_tok(t) for t in df["search_text"]]
+    bm25 = BM25Okapi(tok)
+    return (df, bm25), None
 
-def build_pkg(q,df,bm):
-    sc=bm.get_scores(tok(q)); rk=np.argsort(sc)[::-1][:10]
-    cd=df.iloc[rk].copy(); cd["score"]=sc[rk]
-    top=cd["score"].max() if len(cd) else 0
-    cd=cd[cd["score"]>=top*0.25].head(4)
+def build_context_package(query, df, bm25, k=12, max_chunks=5, budget=650):
+    tok_q = simple_tok(query)
+    scores = bm25.get_scores(tok_q)
+    ranking = np.argsort(scores)[::-1][:k]
+    cands = df.iloc[ranking].copy()
+    cands["score"] = scores[ranking]
+    top = cands["score"].max() if len(cands) else 0
+    cands = cands[cands["score"] >= top*0.25].head(max_chunks)
     lines=[]; rows=[]; used=0
-    for _,r in cd.iterrows():
-        if used+len(r["chunk_text"].split())>600: continue
-        lines.append(f"[{r['title']} — {r['authors']} ({r['publication_year']})]\n{r['chunk_text']}")
-        rows.append(r); used+=len(r["chunk_text"].split())
-    return {"ctx":"\n\n".join(lines), "df":pd.DataFrame(rows)}
+    for _, r in cands.iterrows():
+        wc=len(r["chunk_text"].split())
+        if used+wc>budget: continue
+        lines.append(f"[Source: {r['title']} — {r['authors']} ({r['publication_year']})]\n{r['chunk_text']}")
+        rows.append(r); used+=wc
+    return {"context_text":"\n\n".join(lines), "selected_df": pd.DataFrame(rows), "used_words": used}
 
 def get_key():
     if "OPENROUTER_API_KEY" in st.secrets: return st.secrets["OPENROUTER_API_KEY"]
     if "API" in st.secrets: return st.secrets["API"]
-    return os.environ.get("OPENROUTER_API_KEY")
+    return os.environ.get("OPENROUTER_API_KEY") or os.environ.get("API")
 
-(df_bm, err) = get_index()
-if err: st.stop()
-df,bm=df_bm
+# --- SIDEBAR - BRAND STORY ---
+with st.sidebar:
+    # Logo
+    if Path("logo.png").exists():
+        st.image("logo.png", width=180)
+    elif Path("data/../logo.png").exists():
+        st.image("data/../logo.png", width=180)
+    
+    st.markdown(f"## {BRAND_NAME_AR} | {BRAND_NAME_EN}")
+    st.caption(f"{TAGLINE}")
+    st.divider()
+    st.markdown("### 💡 عن المنصة")
+    st.markdown("""
+    **وصال** هي منصة RAG أكاديمية ذكية تحلل **أثر الرقمنة على التفاعلات الاجتماعية** 
+    اعتماداً على 11 ورقة بحثية وكتاب متخصص.
 
-if "msgs" not in st.session_state: st.session_state.msgs=[]
+    - 🔍 **بحث هجين:** دلالي + لفظي (BM25)
+    - 🌐 **ثنائية اللغة:** عربي / إنجليزي
+    - 🤖 **Llama 3.3 70B** عبر OpenRouter
+    - 📚 **Section 16** - هيكل الدكتور
+    """)
+    st.divider()
+    st.markdown("### 📊 الإحصائيات")
+    if CHUNKS_PATH.exists():
+        try:
+            df_tmp = pd.read_parquet(CHUNKS_PATH)
+            c1,c2 = st.columns(2)
+            c1.metric("المصادر", f"{df_tmp['document_id'].nunique()}")
+            c2.metric("المقاطع", f"{len(df_tmp)}")
+        except: pass
+    
+    st.divider()
+    st.markdown("### ⚙️ كيف تعمل؟")
+    st.markdown("""
+    1.  تكتب سؤال بلغة عربية أو إنجليزية
+    2.  النظام يسترجع أكثر 5 مقاطع صلة
+    3.  Llama يولد إجابة موثقة بالمصادر
+    """)
+    st.divider()
+    st.caption("مشروع أكاديمي - الإجابات مولدة تلقائياً - راجع المصادر الأصلية")
 
-# TOPBAR
-st.markdown("""
-<div class="topbar"><div class="topbar-inner">
-  <div class="brand">📚 وصال <span style="font-weight:400; color:#78716C; margin-right:6px; font-size:13px;">أثر الرقمنة</span></div>
-  <div style="display:flex; gap:16px; align-items:center;">
-    <div class="nav-links"><span>المكتبة</span><span>كيف يعمل</span><span>المصادر</span></div>
-    <div class="nav-cta">جرّب المساعد</div>
-  </div>
-</div></div>
-""", unsafe_allow_html=True)
-
-# HERO - exactly like second image
-st.markdown('<div class="hero-sec"><div class="hero-grid">', unsafe_allow_html=True)
-
-# Left image
-st.markdown('<div class="hero-img">', unsafe_allow_html=True)
-if Path("hero_final_books.jpg").exists():
-    st.image("hero_final_books.jpg", use_column_width=True)
-elif Path("hero_books.png").exists():
-    st.image("hero_books.png", use_column_width=True)
-elif Path("logo.png").exists():
-    st.image("logo.png", use_column_width=True)
-st.markdown("""
-  <div class="float-chip fc1">💡</div>
-  <div class="float-chip fc2">🏆</div>
-  <div class="float-chip fc3">🎯</div>
-</div>
-""", unsafe_allow_html=True)
-
-# Right text
-st.markdown("""
-<div>
-  <h1 class="hero-title">
-    اعثر على الإجابة<br>التي تبحث عنها في<br><span class="accent">الخدمة الاجتماعية.</span>
-  </h1>
-  <p class="hero-desc">
-    مساعد ذكي يجيبك من كتب ومراجع الخدمة الاجتماعية وعلم الاجتماع، مع ذكر المصدر ورقم الصفحة. مبني على 11 ورقة بحثية وكتاب عن أثر الرقمنة.
-  </p>
-  <div class="hero-search">
-    <span style="color:#A8A29E;">🔍</span>
-    <input placeholder="اكتب سؤالك المهني هنا..." disabled>
-    <button>ابحث</button>
-  </div>
-  <div class="hero-meta">
-    <span>+400 مرجع أكاديمي</span>
-    <span>• إجابات موثقة بالمصدر</span>
-    <span>• عربي وإنجليزي</span>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown('</div></div>', unsafe_allow_html=True)
-
-# FEATURES - 6 cards like image 2
-st.markdown("""
-<div class="section">
-  <div class="section-title">معرفة المجال، منظمة ومتاحة في ثوان</div>
-  <p class="section-sub">كل ما تحتاجه من مفاهيم، نظريات، وأدوات التدخل المهني في مكان واحد</p>
-  <div class="features">
-    <div class="feat-card"><div class="feat-icon">📖</div><div class="feat-title">بحث دلالي + لفظي</div><div class="feat-desc">يجمع بين فهم المعنى والتطابق الحرفي للوصول لأدق النتائج</div></div>
-    <div class="feat-card"><div class="feat-icon">🔍</div><div class="feat-title">إجابات موثقة</div><div class="feat-desc">كل إجابة مع مصدرها، المؤلف، سنة النشر ورقم الصفحة</div></div>
-    <div class="feat-card"><div class="feat-icon">🌐</div><div class="feat-title">ثنائي اللغة</div><div class="feat-desc">اسأل بالعربي أو الإنجليزي واحصل على إجابة بنفس اللغة</div></div>
-    <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">سريع جداً</div><div class="feat-desc">يبحث في 12 مصدر و60 مقطع في أقل من ثانية</div></div>
-    <div class="feat-card"><div class="feat-icon">🎯</div><div class="feat-title">متخصص</div><div class="feat-desc">متخصص في أثر الرقمنة على التفاعلات الاجتماعية والخدمة</div></div>
-    <div class="feat-card"><div class="feat-icon">🤖</div><div class="feat-title">Llama 3.3 70B</div><div class="feat-desc">مدعوم بأحدث نماذج اللغة المجانية عبر OpenRouter</div></div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-# CHAT DEMO SECTION
-st.markdown("""
-<div class="section" style="background:white; border-top:1px solid #EDE9E3; border-bottom:1px solid #EDE9E3;">
-  <div style="max-width:1150px; margin:0 auto;">
-    <div style="display:grid; grid-template-columns:1fr 1.2fr; gap:32px; align-items:center;">
-      <div style="direction:rtl; text-align:right;">
-        <h3 style="font-size:20px; font-weight:700; margin-bottom:12px;">اسأل كما تسأل زميلاً خبيراً</h3>
-        <p style="color:#78716C; font-size:14px; line-height:1.7;">اكتب سؤالك المهني بلغة طبيعية، وسيجيبك وصال من المكتبة الأكاديمية مع ذكر المصدر.</p>
-      </div>
+# --- MAIN HEADER ---
+logo_col, title_col = st.columns([1,5])
+with logo_col:
+    if Path("logo.png").exists():
+        st.image("logo.png", width=120)
+with title_col:
+    st.markdown(f"""
+    <div class="main-header">
+        <div class="brand-title">
+            <span>📖 {BRAND_NAME_AR}</span> 
+            <span style="font-weight:300; opacity:0.8">|</span> 
+            <span style="font-size:2rem">{BRAND_NAME_EN}</span>
+        </div>
+        <div class="brand-subtitle">
+            {TAGLINE} — نظام RAG ثنائي اللغة على 11 ورقة بحثية وكتاب متخصص في علم الاجتماع الرقمي
+            <br>نموذج: <code>meta-llama/llama-3.3-70b-instruct:free</code> عبر OpenRouter
+        </div>
+        <div class="stats-bar">
+            <div class="stat-chip">📚 12 مصدر أكاديمي</div>
+            <div class="stat-chip">🧠 RAG + BM25</div>
+            <div class="stat-chip">🌐 عربي / إنجليزي</div>
+            <div class="stat-chip">⚡ Llama 3.3 70B Free</div>
+            <div class="stat-chip">🏛️ Section 16</div>
+        </div>
     </div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# REAL CHAT - Llama only
-st.markdown('<div style="max-width:760px; margin:0 auto; padding:24px;">', unsafe_allow_html=True)
+# --- Load Index ---
+(index_data, err) = get_index()
+if err:
+    st.error(err)
+    st.stop()
+df, bm25 = index_data
 
-# Show past messages
-for m in st.session_state.msgs:
-    if m["role"]=="user":
-        st.markdown(f'<div class="msg-user">{m["content"]}</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="msg-assist">{m["content"]}</div>', unsafe_allow_html=True)
-        if "sources" in m and m["sources"]:
-            with st.expander(f"المصادر • {len(m['sources'])}"):
-                for s in m["sources"]:
-                    st.caption(f"{s['title']} — {s['authors']} ({s['publication_year']})")
+# --- CHAT HISTORY ---
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "مرحباً! أنا **وصال**، مساعدك الذكي لتحليل أثر الرقمنة على المجتمع. 👋\n\nاسألني مثلاً:\n- كيف تؤثر الرقمنة على كبار السن؟\n- What is the impact of digital devices on face-to-face interaction in Cairo coffeehouses?\n- ما علاقة الرقمنة بالهوية الاجتماعية؟"}
+    ]
 
-# Example prompts
-if len(st.session_state.msgs)==0:
-    c1,c2,c3=st.columns(3)
-    if c1.button("كيف تؤثر الرقمنة على كبار السن؟", use_container_width=True):
-        st.session_state.msgs.append({"role":"user","content":"كيف تؤثر الرقمنة على كبار السن وعلاقاتهم الاجتماعية؟"}); st.rerun()
-    if c2.button("What is impact in Cairo coffeehouses?", use_container_width=True):
-        st.session_state.msgs.append({"role":"user","content":"What is the impact of digital devices on face-to-face interaction in Cairo coffeehouses?"}); st.rerun()
-    if c3.button("علاقة الرقمنة بالهوية؟", use_container_width=True):
-        st.session_state.msgs.append({"role":"user","content":"ما علاقة الرقمنة بالهوية الاجتماعية؟"}); st.rerun()
+# Display history
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
-st.markdown('</div>', unsafe_allow_html=True)
+# Input
+if prompt := st.chat_input("اكتب سؤالك هنا... (عربي أو إنجليزي)"):
+    # User message
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    
+    # Assistant
+    with st.chat_message("assistant"):
+        with st.spinner("وصال تبحث في 12 مصدر..."):
+            key = get_key()
+            if not key:
+                st.error('أضيفي OPENROUTER_API_KEY في Secrets')
+                st.stop()
+            pkg = build_context_package(prompt, df, bm25)
+            ctx = pkg["context_text"]
+            if not ctx:
+                ans = "لم أجد مصادر كافية لهذا السؤال. جرب صياغة أخرى."
+                st.write(ans)
+            else:
+                try:
+                    client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=key)
+                    resp = client.chat.completions.create(
+                        model=MODEL,
+                        messages=[
+                            {"role": "system", "content": f"أنت {BRAND_NAME_AR}، مساعد أكاديمي متخصص في السوسيولوجيا الرقمية. القواعد:\n1- استخدم السياق فقط\n2- إذا غير كاف قل: لا توجد معلومات كافية في المصادر\n3- اذكر المصدر (المؤلف، السنة) بعد كل معلومة\n4- جاوب بنفس لغة السؤال\n\nالسياق:\n{ctx}"},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.25,
+                    )
+                    ans = resp.choices[0].message.content
+                    st.markdown(f'<div class="answer-box">{ans}</div>', unsafe_allow_html=True)
+                    
+                    if len(pkg["selected_df"]):
+                        st.markdown("#### 📖 المصادر المستخدمة")
+                        sources = pkg["selected_df"][["title","authors","publication_year"]].drop_duplicates()
+                        for _, s in sources.iterrows():
+                            st.markdown(f'<div class="source-card"><b>{s["title"]}</b><br>👤 {s["authors"]} ({s["publication_year"]})</div>', unsafe_allow_html=True)
+                    
+                    with st.expander("🔎 عرض النص المسترجع"):
+                        st.text(ctx)
+                        
+                except Exception as e:
+                    ans = f"خطأ: {e}"
+                    st.error(ans)
+            # Save to history
+            if 'ans' in locals():
+                st.session_state.messages.append({"role": "assistant", "content": ans})
 
-if prompt := st.chat_input("اكتب سؤالك المهني هنا..."):
-    st.session_state.msgs.append({"role":"user","content":prompt})
-    key=get_key()
-    if not key:
-        st.session_state.msgs.append({"role":"assistant","content":"أضيفي OPENROUTER_API_KEY في Secrets بهذا الشكل:\n\nOPENROUTER_API_KEY = \"sk-or-v1-...\""})
-    else:
-        pkg=build_pkg(prompt,df,bm)
-        if not pkg["ctx"]:
-            st.session_state.msgs.append({"role":"assistant","content":"لم أجد مصادر كافية، جرب صياغة أخرى."})
-        else:
-            try:
-                client=OpenAI(base_url="https://openrouter.ai/api/v1", api_key=key)
-                resp=client.chat.completions.create(
-                    model=MODEL,
-                    messages=[
-                        {"role":"system","content":f"أنت وصال، مساعد متخصص في الخدمة الاجتماعية وعلم الاجتماع. استخدم السياق فقط. اذكر المصدر. جاوب بنفس لغة السؤال.\n\nالسياق:\n{pkg['ctx']}"},
-                        {"role":"user","content":prompt}
-                    ],
-                    temperature=0.2
-                )
-                ans=resp.choices[0].message.content
-                srcs=pkg["df"][["title","authors","publication_year"]].drop_duplicates().to_dict("records") if len(pkg["df"]) else []
-                st.session_state.msgs.append({"role":"assistant","content":ans,"sources":srcs})
-            except Exception as e:
-                st.session_state.msgs.append({"role":"assistant","content":f"خطأ: {e}"})
-    st.rerun()
-
-# Footer
-st.markdown("""
-<div style="max-width:1150px; margin:40px auto 0 auto; padding:24px; border-top:1px solid #EDE9E3; text-align:center; color:#A8A29E; font-size:12px;">
-  © 2025 وصال • مبني بـ Llama 3.3 70B • RAG على 11 ورقة وكتاب • Section 16
-</div>
-""", unsafe_allow_html=True)
+st.divider()
+st.markdown(f"<center style='color:#64748B; font-size:0.85rem'>© 2025 {BRAND_NAME_AR} | {BRAND_NAME_EN} - منصة السوسيولوجيا الرقمية - مبني بـ Llama 3.3 70B 🦙</center>", unsafe_allow_html=True)
